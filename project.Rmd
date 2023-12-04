@@ -27,7 +27,7 @@ df_train = pd.read_csv("data/train.csv")
 
 df_train = df_train.drop(["parentspecies"], axis=1) # string value
 
-X_train = df_train.drop("pSat_Pa", axis=1)
+X_train = df_train.drop(["Id","pSat_Pa"], axis=1)
 
 y_train = df_train["pSat_Pa"]
 
