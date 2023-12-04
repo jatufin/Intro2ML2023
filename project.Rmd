@@ -1,0 +1,36 @@
+---
+output: pdf_document
+---
+```{r include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, warning = FALSE)
+
+library(reticulate)
+## use_condaenv("base")
+use_python("/opt/conda/bin/python")
+```
+
+# Introduction to Machine Learning -- 2023
+
+# Term project
+
+## Preprocessing
+
+Train a logistic regression model.
+
+```{python results = "hide"}
+import pandas as pd
+import numpy as np
+
+from sklearn.linear_model import LinearRegression
+
+df_train = pd.read_csv("data/train.csv")
+
+df_train = df_train.drop(["parentspecies"], axis=1) # string value
+
+X_train = df_train.drop("pSat_Pa", axis=1)
+
+y_train = df_train["pSat_Pa"]
+
+model = LinearRegression()
+model.fit(X_train, y_train)
+```
