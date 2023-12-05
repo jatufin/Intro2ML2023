@@ -6,7 +6,7 @@ knitr::opts_chunk$set(echo = FALSE, warning = FALSE)
 
 library(reticulate)
 ## use_condaenv("base")
-use_python("/opt/conda/bin/python")
+use_python("/opt/conda/bin/python") ## OBS! If you don't have Anaconda environment active, comment out this line
 ```
 
 # Introduction to Machine Learning -- 2023
@@ -15,22 +15,74 @@ use_python("/opt/conda/bin/python")
 
 ## Preprocessing
 
-Train a linear regression model.
+In the preprocessing phase we drop the `parentspecies` column, which contains categorical string data. Also the `Id` column is dropped, as it is only for indexing.
 
-```{python results = "hide"}
+All rows containing missing fields are dropped.
+
+```{python results="asis"}
 import pandas as pd
 import numpy as np
+from sklearn.model_selection import train_test_split
 
-from sklearn.linear_model import LinearRegression
+from sklearn.metrics import r2_score
+
+RANDOM_SEED = 42
 
 df_train = pd.read_csv("data/train.csv")
 
-df_train = df_train.drop(["parentspecies"], axis=1) # string value
+# Drop a column with string values
+df_train = df_train.drop(["parentspecies"], axis=1)
 
-X_train = df_train.drop(["Id","pSat_Pa"], axis=1)
+n_original = len(df_train)
+# Drop all rows containing any N/A values
+df_train = df_train.dropna(how="any")
+n_after_cleanup = len(df_train)
 
-y_train = df_train["pSat_Pa"]
+dropped = n_original - n_after_cleanup
+print(f"Dropped {dropped} ({dropped / n_original:.2f}%) lines containing missing values.")
+print(f"Total rows remaining: {n_after_cleanup}")
 
-model = LinearRegression()
-model.fit(X_train, y_train)
+# The feature matrix
+X = df_train.drop(["Id","pSat_Pa"], axis=1)
+
+# The target vector
+y = df_train["pSat_Pa"]
+
+# OBS! This test split is NOT using the dataset provided in the test.csv file
+X_train, X_test, y_train, y_test = train_test_split(
+    X, y, test_size=0.33, random_state=RANDOM_SEED
+)
+
+```
+
+## Polynomial regressors
+
+```{python results = "hide"}
+from sklearn.preprocessing import PolynomialFeatures
+from sklearn.linear_model import LinearRegression
+
+N = 3
+
+polynomial_scores_train = {}
+polynomial_scores_test = {}
+
+for n in range(1,N+1):
+    X_train_poly = PolynomialFeatures(degree=n, include_bias=True).fit_transform(X_train)
+    model = LinearRegression()
+    model.fit(X_train_poly, y_train)
+
+    X_test_poly = PolynomialFeatures(degree=n, include_bias=True).fit_transform(X_test)
+    pred_train = model.predict(X_train_poly)
+    pred_test = model.predict(X_test_poly)
+    polynomial_scores_train[n] = r2_score(pred_train, y_train)
+    polynomial_scores_test[n] = r2_score(pred_test, y_test)
+
+```
+
+```{python}
+print("Polynomial regressors R2 scores:")
+for n in range(1,N+1):
+    print(f" Degree {n}")
+    print(f"  Training data: {polynomial_scores_train[n]:.6f}")
+    print(f"  Test data:     {polynomial_scores_test[n]:.6f}")
 ```
