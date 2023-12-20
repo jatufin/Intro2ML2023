@@ -6,40 +6,32 @@ from sklearn.linear_model import LinearRegression, Lasso
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import r2_score
 
-RANDOM_SEED = 42
+import matplotlib.pyplot as plt
 
-train_data = pd.read_csv('train.csv')
+from preprocess import preprocess
 
-train_data['pSat_Pa_log10'] = np.log10(train_data['pSat_Pa']) #log_10 transformation
-y = train_data['pSat_Pa_log10']
+#RANDOM_SEED = 42
+RANDOM_SEED = None
 
-X = train_data.drop(['pSat_Pa', 'pSat_Pa_log10','Id'], axis=1)
+TARGET_COLUMN = "pSat_Pa"
+DROP_COLUMNS = ["Id"]
 
-# Fill the NA values with the mode
-mode = X['parentspecies'].mode().iloc[0]
-X['parentspecies'] = X['parentspecies'].fillna(mode)
+DATA_FILE = "train.csv"
 
-# Label encoder for the categorial variable
-encoder = LabelEncoder()
-X['parentspecies'] = encoder.fit_transform(X['parentspecies'])
+df = pd.read_csv(DATA_FILE)
 
-# Feature scaling for the numerical features only (cruical for the SVR in particular)
-parentspecies = X['parentspecies']
-X.drop("parentspecies", axis=1)
-scaler = StandardScaler()
-X[X.columns] = scaler.fit_transform(X)
-X['parentspecies'] = parentspecies
-
-## Regressor
+X, y, numerical_features, one_hot, scaler = preprocess(df, target_column=TARGET_COLUMN, drop_columns=DROP_COLUMNS)
 
 # Polynomial degrees
-N = 3
+N = 1
 
 for n in range(1,N+1):
     features = PolynomialFeatures(degree=n, interaction_only=True, include_bias=False)
     X_poly = features.fit_transform(X)
     feature_names = features.get_feature_names_out()
 
+    print("Feature names:")
+    print(feature_names)
     #model = LinearRegression()
     model = Lasso()
     model.fit(X_poly, y)
