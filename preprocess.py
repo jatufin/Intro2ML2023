@@ -20,7 +20,9 @@ def preprocess(df,
             target_column (string)
         
         Returns:
-            X, y, numerical_features, one_hot, scaler
+            X, y, feature_names, numerical_features, one_hot, scaler
+
+            The feature_names array contains one_hot encoded names
     """
     # Drop given columns
     for d in drop_columns:
@@ -58,8 +60,10 @@ def preprocess(df,
             X_encoded = one_hot.fit_transform(X[categorical_features]).toarray()
         else:
             X_encoded = one_hot.transform(X[categorical_features]).toarray()
+        one_hot_feature_names = one_hot.get_feature_names_out()
     else:
         X_encoded = []
+        one_hot_feature_names = []
 
     # Feature scaling for the numerical features only (crucial for the SVR in particular)
     if not numerical_features:
@@ -77,4 +81,6 @@ def preprocess(df,
     else:
         X_encoded = X_scaled
 
-    return X_encoded, y, numerical_features, one_hot, scaler
+    feature_names = np.concatenate((numerical_features, one_hot_feature_names))
+
+    return X_encoded, y, feature_names, numerical_features, one_hot, scaler
