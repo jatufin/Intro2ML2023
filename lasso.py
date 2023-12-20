@@ -20,20 +20,24 @@ DATA_FILE = "train.csv"
 
 df = pd.read_csv(DATA_FILE)
 
-X, y, numerical_features, one_hot, scaler = preprocess(df, target_column=TARGET_COLUMN, drop_columns=DROP_COLUMNS)
+X, y, columns, numerical_features, one_hot, scaler = preprocess(df, target_column=TARGET_COLUMN, drop_columns=DROP_COLUMNS)
+
+X_df = pd.DataFrame(X, columns=columns)
 
 # Polynomial degrees
-N = 1
+N = 3
+
+# LASSO PARAMETERS
+ALPHA = 0.2
+MAX_ITER = 10000
 
 for n in range(1,N+1):
     features = PolynomialFeatures(degree=n, interaction_only=True, include_bias=False)
-    X_poly = features.fit_transform(X)
+    X_poly = features.fit_transform(X_df)
     feature_names = features.get_feature_names_out()
 
-    print("Feature names:")
-    print(feature_names)
     #model = LinearRegression()
-    model = Lasso()
+    model = Lasso(alpha=ALPHA, max_iter=MAX_ITER)
     model.fit(X_poly, y)
 
     print(f"POLYNOMIAL: {n}")

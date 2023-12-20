@@ -27,7 +27,7 @@ SVR_GAMMA="scale"
 # Feature reduction target
 MIN_FEATURES=2
 
-N = 3000 # Use a random sample of N rows from the data set. None ==> all
+N = 300 # Use a random sample of N rows from the data set. None ==> all
 TRAIN_DATA_FILE = "train.csv"
 #TEST_DATA_FILE = "test.csv"
 
@@ -56,7 +56,7 @@ def score_with_columns(
         df = data[selected_features].copy()
         df[TARGET_COLUMN] = data[TARGET_COLUMN]
     
-        X, y, numerical_features, one_hot, scaler = preprocess(df, target_column=TARGET_COLUMN, drop_columns=DROP_COLUMNS)
+        X, y, feature_names, numerical_features, one_hot, scaler = preprocess(df, target_column=TARGET_COLUMN, drop_columns=DROP_COLUMNS)
         
         X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=RANDOM_SEED)
 
