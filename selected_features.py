@@ -2,7 +2,7 @@ import pandas as pd
 import numpy as np
 from sklearn.preprocessing import OneHotEncoder, StandardScaler, PolynomialFeatures
 from sklearn.svm import SVR
-from sklearn.model_selection import train_test_split
+from sklearn.model_selection import train_test_split, cross_validate
 from sklearn.metrics import r2_score
 
 import matplotlib.pyplot as plt
@@ -91,23 +91,20 @@ df = df_data_file[selected_columns_01].copy()
 
 X, y, columns, numerical_features, one_hot, scaler = preprocess(df, target_column=TARGET_COLUMN, drop_columns=DROP_COLUMNS)
     
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=TEST_SIZE)
-
-print(f"Training SVR...")
+print(f"Cross validating SVR (CV={CV})...")
 model_svr = SVR(
     kernel=SVR_KERNEL,
     C=SVR_C,
     gamma=SVR_GAMMA
 )
 
-model_svr.fit(X_train, y_train)
-print("trained!")
+cv_results = cross_validate(model_svr, X, y, cv=CV)
+print("Cross validation scores:")
+scores = cv_results["test_score"]
+print(scores)
 
-print("Predicting...")
-y_test_pred = model_svr.predict(X_test)
-
-r2 = r2_score(y_test, y_test_pred)
-print(f"R2 score for SVM with selected columns ({method}): {r2}")
+r2 = scores.mean()
+print(f"Mean R2 score for SVM with selected columns ({method}): {r2}")
 
 method = "LASSO"
 print("====================================")
@@ -122,21 +119,39 @@ X, y, columns, numerical_features, one_hot, scaler = preprocess(df, target_colum
 X_df = pd.DataFrame(X, columns=columns)
 X = X_df[selected_columns_02].to_numpy()
     
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=TEST_SIZE)
-
-print(f"Training SVR...")
+print(f"Cross validating SVR (CV={CV})...")
 model_svr = SVR(
     kernel=SVR_KERNEL,
     C=SVR_C,
     gamma=SVR_GAMMA
 )
 
-model_svr.fit(X_train, y_train)
-print("trained!")
+cv_results = cross_validate(model_svr, X, y, cv=CV)
+print("Cross validation scores:")
+scores = cv_results["test_score"]
+print(scores)
 
-print("Predicting...")
-y_test_pred = model_svr.predict(X_test)
+r2 = scores.mean()
+print(f"Mean R2 score for SVM with selected columns ({method}): {r2}")
 
-r2 = r2_score(y_test, y_test_pred)
-print(f"R2 score for SVM with selected columns ({method}): {r2}")
+# SVR hyperparameters: kernel=rbf C=1.0 gamma=scale
+# ====================================
+# feature reduction
+# Selected columns:
+# ['aldehyde', 'aromatic.hydroxyl', 'C.C.C.O.in.non.aromatic.ring', 'carbonylperoxyacid', 'carbonylperoxynitrate', 'carboxylic.acid', 'hydroperoxide', 'hydroxyl..alkyl.', 'ketone', 'nitro', 'nitroester', 'NumHBondDonors', 'NumOfAtoms', 'NumOfC', 'NumOfConf', 'NumOfConfUsed', 'NumOfN', 'parentspecies', 'peroxide', 'pSat_Pa']
+# Cross validating SVR (CV=10)...
+# Cross validation scores:
+# [0.76405281 0.71947577 0.62028288 0.73629226 0.7156401  0.64183068
+#  0.68875946 0.71053148 0.74660047 0.71636969]
+# Mean R2 score for SVM with selected columns (feature reduction): 0.7059835603642994
+# ====================================
+# LASSO
+# Selected columns:
+# ['aldehyde', 'aromatic.hydroxyl', 'C.C..non.aromatic.', 'carbonylperoxyacid', 'carbonylperoxynitrate', 'carboxylic.acid', 'ether..alicyclic.', 'hydroperoxide', 'ketone', 'MW', 'nitroester', 'NumHBondDonors', 'NumOfC', 'NumOfConf', 'parentspecies_apin', 'peroxide']
+# Cross validating SVR (CV=10)...
+# Cross validation scores:
+# [0.77043208 0.70616803 0.60902101 0.72338666 0.7164575  0.6280325
+#  0.6817502  0.70392669 0.74398637 0.70570995]
+# Mean R2 score for SVM with selected columns (LASSO): 0.698887100043793
+
 
