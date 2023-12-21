@@ -14,7 +14,8 @@ import matplotlib.pyplot as plt
 from preprocess import preprocess
 
 # PCA COMPONENTS
-N_PCA = 18
+#N_PCA = 16
+N_PCA = None
 
 # SVR HYPERPARAMS
 SVR_KERNEL = "rbf"
@@ -28,7 +29,11 @@ TEST_SIZE = 0.3
 RANDOM_SEED = None
 
 TARGET_COLUMN = "pSat_Pa"
-DROP_COLUMNS = ["Id"]
+
+
+#DROP_COLUMNS = ["Id"]
+# Drop categorical
+DROP_COLUMNS = ["Id", "parentspecies"]
 
 DATA_FILE = "train.csv"
 
@@ -77,7 +82,7 @@ model_svr = SVR(
 model_svr.fit(X_train_pca, y_train)
 print("trained!")
 
-print("Predicting with SVR...")
+print("Predicting with PCA...")
 y_test_pred = model_svr.predict(X_test_pca)
 
 r2 = r2_score(y_test, y_test_pred)
