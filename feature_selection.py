@@ -27,7 +27,7 @@ SVR_GAMMA="scale"
 # Feature reduction target
 MIN_FEATURES=2
 
-N = 300 # Use a random sample of N rows from the data set. None ==> all
+N = None # Use a random sample of N rows from the data set. None ==> all
 TRAIN_DATA_FILE = "train.csv"
 #TEST_DATA_FILE = "test.csv"
 

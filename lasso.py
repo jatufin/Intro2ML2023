@@ -25,10 +25,10 @@ X, y, columns, numerical_features, one_hot, scaler = preprocess(df, target_colum
 X_df = pd.DataFrame(X, columns=columns)
 
 # Polynomial degrees
-N = 3
+N = 1
 
 # LASSO PARAMETERS
-ALPHA = 0.2
+ALPHA = 0.02
 MAX_ITER = 10000
 
 for n in range(1,N+1):
@@ -46,6 +46,6 @@ for n in range(1,N+1):
     for i in range(len(feature_names)):
         coef = model.coef_[i]
         if  coef != 0:
-            print(f"        {i:4} {feature_names[i]:20} = {coef:.4f}")
-
+            #print(f"        {i:4} {feature_names[i]:20} = {coef:.4f}")
+            print(feature_names[i])
 
