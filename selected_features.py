@@ -33,6 +33,8 @@ CV = 10
 DROP_COLUMNS = ["Id"]
 
 # Columns from feature reduction
+
+# Columns from a single run in whole dataset
 selected_columns_01 = [
     "aldehyde",
     "aromatic.hydroxyl",
@@ -56,6 +58,27 @@ selected_columns_01 = [
     TARGET_COLUMN # Features are selected from the original dataset
 ]
 
+# Columns from 5-fold cross validation with N=5000 random subset from the original dataset
+
+selected_columns_01 = [
+    "NumOfC",
+    "NumOfO",
+    "NumHBondDonors",
+    "NumOfConf",
+    "NumOfConfUsed",
+    "parentspecies",
+    "C.C..non.aromatic.",
+    "hydroxyl..alkyl.",
+    "aldehyde",
+    "ketone",
+    "carboxylic.acid",
+    "ether..alicyclic.",
+    "aromatic.hydroxyl",
+    "carbonylperoxynitrate",
+    "peroxide",
+    "carbonylperoxyacid",
+    TARGET_COLUMN # Features are selected from the original dataset    
+]
 # Columns from LASSO
 selected_columns_02 = [
     "aldehyde",

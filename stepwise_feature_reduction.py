@@ -25,12 +25,13 @@ SVR_GAMMA="scale"
 #SVR_GAMMA=0.1
 
 # Feature reduction target
-MIN_FEATURES=2
+MIN_FEATURES=10
 
 # Cross validation
-CV=2
+CV=5
 
-N = 2000 # Use a random sample of N rows from the data set. None ==> all
+# Dataset
+N = 5000 # Use a random sample of N rows from the data set. None ==> all
 TRAIN_DATA_FILE = "train.csv"
 #TEST_DATA_FILE = "test.csv"
 
@@ -131,7 +132,10 @@ plt.show()
 print("========================")
 print(f"Maximum R2 score: {max_score}")
 print(f"Features: ({len(max_features)})")
-print(f"'feature reduction': {max_features}")
+print("selected columns = [")
+for f in max_features:
+    print(f"    '{f}',")
+print("]")
 print("========================")
 print("")
 
