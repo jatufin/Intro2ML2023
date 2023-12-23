@@ -14,7 +14,7 @@ import matplotlib.pyplot as plt
 from preprocess import preprocess
 
 # PCA COMPONENTS
-N_PCA = 16
+N_PCA = 18
 #N_PCA = None
 
 # SVR HYPERPARAMS
@@ -52,20 +52,20 @@ print(f"SVR hyperparameters: kernel={SVR_KERNEL} C={SVR_C} gamma={SVR_GAMMA}")
 ########################################################
 # Plain regression without PCA
 
-print(f"Cross validating SVR without PCA (CV={CV})...")
-model_svr = SVR(
-    kernel=SVR_KERNEL,
-    C=SVR_C,
-    gamma=SVR_GAMMA
-)
+# print(f"Cross validating SVR without PCA (CV={CV})...")
+# model_svr = SVR(
+#     kernel=SVR_KERNEL,
+#     C=SVR_C,
+#     gamma=SVR_GAMMA
+# )
 
-cv_results = cross_validate(model_svr, X, y, cv=CV)
-print("Cross validation scores:")
-scores = cv_results["test_score"]
-print(scores)
+# cv_results = cross_validate(model_svr, X, y, cv=CV)
+# print("Cross validation scores:")
+# scores = cv_results["test_score"]
+# print(scores)
 
-r2 = scores.mean()
-print(f"Mean R2 score for SVR without PCA: {r2}")
+# r2 = scores.mean()
+# print(f"Mean R2 score for SVR without PCA: {r2}")
 
 ########################################################
 # Regression with PCA
@@ -86,6 +86,8 @@ model_svr = SVR(
 cv_results = cross_validate(model_svr, X, y, cv=CV)
 print("Cross validation scores:")
 scores = cv_results["test_score"]
+print(f"'PCA-{N_PCA}': {scores}")
+
 print(scores)
 
 r2 = scores.mean()
@@ -97,29 +99,3 @@ plt.title("Explained variance ratio of each principal component")
 plt.xlabel("Principal component")
 plt.bar(plot_x, plot_y)
 plt.show()
-
-#### Run with 16 principal components
-# SVR hyperparameters: kernel=rbf C=1.0 gamma=scale
-# Cross validating SVR without PCA (CV=10)...
-# Cross validation scores:
-# [0.78038555 0.72403779 0.63594943 0.74288312 0.72361168 0.64507708
-#  0.68626536 0.69281037 0.7404384  0.72124387]
-# Mean R2 score for SVR without PCA: 0.709270264122186
-# Cross validating SVR with PCA (number of PCA components: 16, CV=10)...
-# Cross validation scores:
-# [0.77292034 0.71530254 0.61872856 0.73272891 0.70959616 0.62907664
-#  0.67918397 0.67606884 0.72361419 0.70383028]
-# Mean R2 score for SVR with PCA: 0.6961050429778947
-
-#### Run with 16 principal components
-# SVR hyperparameters: kernel=rbf C=1.0 gamma=scale
-# Cross validating SVR without PCA (CV=10)...
-# Cross validation scores:
-# [0.78038555 0.72403779 0.63594943 0.74288312 0.72361168 0.64507708
-#  0.68626536 0.69281037 0.7404384  0.72124387]
-# Mean R2 score for SVR without PCA: 0.709270264122186
-# Cross validating SVR with PCA (number of PCA components: 18, CV=10)...
-# Cross validation scores:
-# [0.77819526 0.71949894 0.63348564 0.73624252 0.71650156 0.63676838
-#  0.68239944 0.68280755 0.72970341 0.70950674]
-# Mean R2 score for SVR with PCA: 0.7025109446486143
